@@ -20,7 +20,9 @@ public class ParkingService {
         var id = getUUID();
         var id2 = getUUID();
         Parking parking = new Parking(id, "HFJ-8358", "RJ", "CORSA", "AMARELO");
+        parking.setEntryDate(LocalDateTime.of(2022, 10, 29, 8, 0, 0));
         Parking parking2 = new Parking(id2, "GDK-5385", "SP", "VECTRA", "CINZA");
+        parking2.setEntryDate(LocalDateTime.of(2022, 10, 29, 17, 0, 0));
         parkingMap.put(id, parking);
         parkingMap.put(id2, parking2);
     }
@@ -46,6 +48,37 @@ public class ParkingService {
         parking.setId(uuid);
         parking.setEntryDate(LocalDateTime.now());
         parkingMap.put(uuid, parking);
+        return parking;
+    }
+
+    public void delete(String id) {
+        findById(id);
+        parkingMap.remove(id);
+    }
+
+    public Parking update(String id, Parking parkingCreate) {
+        Parking parking = findById(id);
+        parking.setColor(parkingCreate.getColor());
+        parkingMap.replace(id, parking);
+
+        return parking;
+    }
+
+    public Parking exit(String id) {
+        var parking = findById(id);
+        parking.setExitDate(LocalDateTime.now());
+
+        int horas = parking.getExitDate().getHour() - parking.getEntryDate().getHour();
+
+        if (horas == 1) {
+            parking.setBill(1.0);
+        } else if (horas > 1 && horas <= 3) {
+            parking.setBill(2.50);
+        } else if (horas >= 4) {
+            parking.setBill(5.00);
+        } else {
+            parking.setBill(0.0);
+        }
         return parking;
     }
 }
