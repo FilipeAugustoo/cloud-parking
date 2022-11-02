@@ -1,17 +1,22 @@
 package one.digitalinnovation.parking.config;
 
+import com.google.common.collect.Lists;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.ResponseEntity;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
-import springfox.documentation.service.*;
+import springfox.documentation.service.ApiKey;
+import springfox.documentation.service.AuthorizationScope;
+import springfox.documentation.service.Contact;
+import springfox.documentation.service.SecurityReference;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spi.service.contexts.SecurityContext;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
-import java.util.Arrays;
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -27,6 +32,7 @@ public class SwaggerConfig {
                 "filipe@gmail.com"
         );
     }
+
 
     private ApiInfoBuilder informacoesApi() {
 
@@ -53,25 +59,33 @@ public class SwaggerConfig {
                 .paths(PathSelectors.any())
                 .build()
                 .apiInfo(this.informacoesApi().build())
-                .securityContexts(Collections.singletonList(getSecurityContext()))
-                .securitySchemes(List.of(basicAuthScheme()))
+                .securityContexts(Collections.singletonList(securityContext()))
+                .securitySchemes(List.of(apiKey()))
+                .useDefaultResponseMessages(false)
+                .directModelSubstitute(LocalDate.class, String.class)
+                .genericModelSubstitutes(ResponseEntity.class)
                 .consumes(new HashSet<String>(List.of("application/json")))
                 .produces(new HashSet<String>(List.of("application/json")));
 
         return docket;
     }
 
-    private SecurityContext getSecurityContext() {
+    private ApiKey apiKey() {
+        return new ApiKey("JWT", "Authorization", "header");
+    }
+
+    private SecurityContext securityContext() {
         return SecurityContext.builder()
-                .securityReferences(List.of(basicAuthReference()))
+                .securityReferences(defaultAuth())
                 .build();
     }
 
-    private SecurityReference basicAuthReference() {
-        return new SecurityReference("basicAuth", new AuthorizationScope[0]);
-    }
-
-    private SecurityScheme basicAuthScheme() {
-        return new BasicAuth("basicAuth");
+    List<SecurityReference> defaultAuth() {
+        AuthorizationScope authorizationScope
+                = new AuthorizationScope("global", "accessEverything");
+        AuthorizationScope[] authorizationScopes = new AuthorizationScope[1];
+        authorizationScopes[0] = authorizationScope;
+        return Lists.newArrayList(
+                new SecurityReference("JWT", authorizationScopes));
     }
 }
