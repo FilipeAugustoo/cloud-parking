@@ -1,6 +1,6 @@
 package one.digitalinnovation.parking.service;
 
-import one.digitalinnovation.parking.model.Parking;
+import one.digitalinnovation.parking.model.Car;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -13,7 +13,7 @@ public class ParkingCheckOut {
     public static final double ADDITIONAL_PER_HOUR_VALUE = 2.00;
     public static final double DAY_VALUE = 20.00;
 
-    public static Double getBill(Parking parking) {
+    public static Double getBill(Car parking) {
         return getBill(parking.getEntryDate(), parking.getExitDate());
     }
 

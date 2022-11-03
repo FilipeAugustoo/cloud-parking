@@ -4,9 +4,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import java.time.LocalDateTime;
+import javax.persistence.*;
+import java.util.List;
 
 @Getter
 @Setter
@@ -17,11 +16,22 @@ public class Parking {
     @Id
     private String id;
 
-    private String license;
-    private String state;
-    private String model;
-    private String color;
-    private LocalDateTime entryDate;
-    private LocalDateTime exitDate;
-    private Double bill;
+    private String name;
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "parking")
+    private List<Car> cars;
+
+    private int QUANT_VAGAS = 2;
+    private final int LIMITE_VAGAS = 3;
+
+    public void setCar(Car car) {
+        cars.add(car);
+    }
+
+    public void inputParking() {
+        QUANT_VAGAS++;
+    }
+
+    public void outputParking() {
+        QUANT_VAGAS--;
+    }
 }
