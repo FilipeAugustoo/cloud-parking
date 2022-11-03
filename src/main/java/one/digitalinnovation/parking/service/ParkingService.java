@@ -1,6 +1,7 @@
 package one.digitalinnovation.parking.service;
 
 import lombok.RequiredArgsConstructor;
+import one.digitalinnovation.parking.exception.LicenseAlreadyRegisteredException;
 import one.digitalinnovation.parking.exception.ParkingNotFoundException;
 import one.digitalinnovation.parking.model.Parking;
 import one.digitalinnovation.parking.repository.ParkingRepository;
@@ -27,8 +28,8 @@ public class ParkingService {
     }
 
     @Transactional(readOnly = true)
-    public Parking findById(String id) {
-        return repository.findById(id).orElseThrow(() -> new ParkingNotFoundException(id));
+    public Parking findByLicense(String id) {
+        return repository.findByLicense(id).orElseThrow(() -> new ParkingNotFoundException(id));
     }
 
     @Transactional
@@ -36,31 +37,32 @@ public class ParkingService {
         String uuid = getUUID();
         parking.setId(uuid);
         parking.setEntryDate(LocalDateTime.now());
+
+        boolean placaExiste = repository.findByLicense(parking.getLicense()).isPresent();
+        if (placaExiste) throw new LicenseAlreadyRegisteredException(parking.getLicense());
+
         repository.save(parking);
         return parking;
     }
 
     @Transactional
-    public void delete(String id) {
-        findById(id);
-        repository.deleteById(id);
+    public void delete(String license) {
+        Parking parking = findByLicense(license);
+        repository.deleteById(parking.getId());
     }
 
     @Transactional
-    public Parking update(String id, Parking parkingCreate) {
-        Parking parking = findById(id);
+    public Parking update(String license, Parking parkingCreate) {
+        Parking parking = findByLicense(license);
         parking.setColor(parkingCreate.getColor());
-        parking.setState(parkingCreate.getState());
-        parking.setModel(parkingCreate.getModel());
-        parking.setLicense(parkingCreate.getLicense());
         repository.save(parking);
 
         return parking;
     }
 
     @Transactional
-    public Parking checkout(String id) {
-        Parking parking = findById(id);
+    public Parking checkout(String license) {
+        Parking parking = findByLicense(license);
         parking.setExitDate(LocalDateTime.now());
         parking.setBill(ParkingCheckOut.getBill(parking));
         repository.save(parking);

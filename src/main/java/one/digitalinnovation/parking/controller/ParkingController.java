@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -31,10 +32,10 @@ public class ParkingController {
         return ResponseEntity.ok(result);
     }
 
-    @GetMapping("/{id}")
-    @ApiOperation("Find by id parking")
-    public ResponseEntity<ParkingDTO> findById(@PathVariable String id) {
-        Parking parking = service.findById(id);
+    @GetMapping("/{license}")
+    @ApiOperation("Find by license parking")
+    public ResponseEntity<ParkingDTO> findByLicense(@PathVariable String license) {
+        Parking parking = service.findByLicense(license);
 
         if (parking == null) return ResponseEntity.notFound().build();
 
@@ -45,30 +46,33 @@ public class ParkingController {
 
     @PostMapping
     @ApiOperation("Create parking")
-    public ResponseEntity<ParkingDTO> create(@RequestBody ParkingCreateDTO dto) {
+    public ResponseEntity<ParkingDTO> create(@Valid @RequestBody ParkingCreateDTO dto) {
         var parking = mapper.toParkingCreate(dto);
         service.create(parking);
         var parkingDTO = mapper.toParkingDTO(parking);
         return ResponseEntity.status(HttpStatus.CREATED).body(parkingDTO);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<ParkingDTO> update(@RequestParam String id, @RequestBody ParkingCreateDTO dto) {
+    @PutMapping("/{license}")
+    @ApiOperation("Update parking")
+    public ResponseEntity<ParkingDTO> update(@RequestParam String license, @Valid @RequestBody ParkingCreateDTO dto) {
         var parking = mapper.toParkingCreate(dto);
-        service.update(id, parking);
+        service.update(license, parking);
         var parkingDTO = mapper.toParkingDTO(parking);
         return ResponseEntity.ok(parkingDTO);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable String id) {
-        service.delete(id);
+    @DeleteMapping("/{license}")
+    @ApiOperation("Delete Parking")
+    public ResponseEntity<Void> delete(@PathVariable String license) {
+        service.delete(license);
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/{id}")
-    public ResponseEntity<ParkingDTO> exit(@PathVariable String id) {
-        Parking parking = service.checkout(id);
+    @PostMapping("/{license}")
+    @ApiOperation("Exit Parking")
+    public ResponseEntity<ParkingDTO> exit(@PathVariable String license) {
+        Parking parking = service.checkout(license);
         ParkingDTO parkingDTO = mapper.toParkingDTO(parking);
 
         return ResponseEntity.ok(parkingDTO);
