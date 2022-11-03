@@ -1,5 +1,7 @@
 package one.digitalinnovation.parking.controller;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import one.digitalinnovation.parking.controller.dto.TokenDTO;
 import one.digitalinnovation.parking.controller.dto.UserCreateDTO;
@@ -17,12 +19,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/user")
 @RequiredArgsConstructor
+@Api(tags = "User Controller")
 public class UserController {
 
     private final UserService service;
     private final UserMapper mapper;
 
     @PostMapping("/signin")
+    @ApiOperation("Cadastra Usuário")
     public ResponseEntity<User> createUser(@RequestBody UserCreateDTO userDto) {
         User user = mapper.toUser(userDto);
         User userCreated = service.createUser(user);
@@ -31,6 +35,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
+    @ApiOperation("Loga Usuário")
     public ResponseEntity<TokenDTO> loginUser(@RequestBody UserLoginDTO userDto) {
         TokenDTO token = service.loginUser(userDto);
         return ResponseEntity.ok(token);
