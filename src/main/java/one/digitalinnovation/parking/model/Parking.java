@@ -20,8 +20,8 @@ public class Parking {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "parking")
     private List<Car> cars;
 
-    private int QUANT_VAGAS = 2;
-    private final int LIMITE_VAGAS = 3;
+    public static int QUANT_VAGAS = 2;
+    public static final int LIMITE_VAGAS = 3;
 
     public void setCar(Car car) {
         cars.add(car);
