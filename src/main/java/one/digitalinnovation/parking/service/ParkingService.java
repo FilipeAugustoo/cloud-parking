@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+
 @Service
 @RequiredArgsConstructor
 public class ParkingService {
@@ -24,16 +26,25 @@ public class ParkingService {
         return repository.findById(id).orElseThrow(() -> new ParkingNotFoundException(id));
     }
 
-    public void removeCar(String license) {
-        Car car = carRepository.findByLicense(license).orElseThrow(() -> new CarNotFoundException(license));
+    public Car entryCar(Car car) {
         Parking parking = findParking();
-        parking.getCars().remove(car);
-
-        System.out.println(parking.getCars());
+        parking.entryCar(car);
+        car.setEntryDate(LocalDateTime.now());
+        car.setEstaEstacionado(true);
+        car.setQuantEstacionou(1);
+        carRepository.save(car);
+        return car;
     }
 
+    public Car exitCar(String license) {
+        var car = carRepository.findByLicense(license).orElseThrow(() -> new CarNotFoundException(license));
+        var parking = findParking();
+        car.setExitDate(LocalDateTime.now());
+        car.setBill(ParkingCheckOut.getBill(car));
+        parking.exitCar(car);
+        carRepository.save(car);
 
-    public Parking findById(String id) {
-        return repository.findById(id).orElseThrow(() -> new ParkingNotFoundException(id));
+        return car;
     }
+
 }

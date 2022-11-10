@@ -1,12 +1,15 @@
 package one.digitalinnovation.parking.controller;
 
 import lombok.RequiredArgsConstructor;
-import one.digitalinnovation.parking.controller.dto.CarCreateDTO;
 import one.digitalinnovation.parking.model.Car;
 import one.digitalinnovation.parking.service.CarService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/car")
@@ -15,15 +18,15 @@ public class CarController {
 
     private final CarService service;
 
-    @PostMapping
-    public ResponseEntity<Car> createCar(@RequestBody CarCreateDTO dto) {
-        Car car = service.create(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(car);
+    @GetMapping
+    public ResponseEntity<List<Car>> findAllCars() {
+        List<Car> cars = service.findAllCars();
+        return ResponseEntity.ok(cars);
     }
 
-    @PostMapping("/{license}")
-    public ResponseEntity<Car> exitCar(@PathVariable String license) {
-        Car car = service.exit(license);
+    @GetMapping("{license}")
+    public ResponseEntity<Car> findByLicense(@PathVariable String license) {
+        Car car = service.findByLicense(license);
         return ResponseEntity.ok(car);
     }
 }

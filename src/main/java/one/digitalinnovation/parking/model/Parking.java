@@ -4,7 +4,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import java.util.List;
 
 @Getter
@@ -17,21 +19,19 @@ public class Parking {
     private String id;
 
     private String name;
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "parking")
+
+    @OneToMany
     private List<Car> cars;
+    private int VAGAS_OCUPADAS;
+    private int QUANT_VAGAS;
 
-    public static int QUANT_VAGAS = 2;
-    public static final int LIMITE_VAGAS = 3;
-
-    public void setCar(Car car) {
+    public void entryCar(Car car) {
+        VAGAS_OCUPADAS++;
         cars.add(car);
     }
 
-    public void inputParking() {
-        QUANT_VAGAS++;
-    }
-
-    public void outputParking() {
-        QUANT_VAGAS--;
+    public void exitCar(Car car) {
+        VAGAS_OCUPADAS--;
+        cars.remove(car);
     }
 }
