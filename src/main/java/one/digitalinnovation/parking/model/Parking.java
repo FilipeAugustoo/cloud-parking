@@ -22,16 +22,16 @@ public class Parking {
 
     @OneToMany
     private List<Car> cars;
-    private int VAGAS_OCUPADAS;
-    private int QUANT_VAGAS;
+    private int OCCUPIED_VACANCIES;
+    private int NUMBER_VACANCIES;
 
     public void entryCar(Car car) {
-        VAGAS_OCUPADAS++;
+        OCCUPIED_VACANCIES++;
         cars.add(car);
     }
 
     public void exitCar(Car car) {
-        VAGAS_OCUPADAS--;
+        OCCUPIED_VACANCIES--;
         cars.remove(car);
     }
 }

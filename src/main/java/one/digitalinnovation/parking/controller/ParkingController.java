@@ -3,7 +3,6 @@ package one.digitalinnovation.parking.controller;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
-import one.digitalinnovation.parking.controller.dto.CarCreateDTO;
 import one.digitalinnovation.parking.controller.dto.ParkingDTO;
 import one.digitalinnovation.parking.controller.mapper.CarMapper;
 import one.digitalinnovation.parking.controller.mapper.ParkingMapper;
@@ -12,8 +11,6 @@ import one.digitalinnovation.parking.service.ParkingService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/parking")
@@ -33,15 +30,13 @@ public class ParkingController {
     }
 
 
-    @PostMapping
-    public ResponseEntity<Car> entryCar(@RequestBody @Valid CarCreateDTO carDto) {
-        Car car = carMapper.toCar(carDto);
-        service.entryCar(car);
-
+    @PostMapping("/entry/{license}")
+    public ResponseEntity<Car> entryCar(@PathVariable String license) {
+        Car car = service.entryCar(license);
         return ResponseEntity.status(HttpStatus.CREATED).body(car);
     }
 
-    @PostMapping("{license}")
+    @PostMapping("/exit/{license}")
     public ResponseEntity<Car> exitCar(@PathVariable String license) {
         Car car = service.exitCar(license);
         return ResponseEntity.ok(car);

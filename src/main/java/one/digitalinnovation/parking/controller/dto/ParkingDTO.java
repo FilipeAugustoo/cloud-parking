@@ -12,6 +12,6 @@ public class ParkingDTO {
 
     private String name;
     private List<Car> cars;
-    private int VAGAS_OCUPADAS;
-    private int QUANT_VAGAS;
+    private int OCCUPIED_VACANCIES;
+    private int NUMBER_VACANCIES;
 }

@@ -2,7 +2,6 @@ package one.digitalinnovation.parking.service;
 
 import lombok.RequiredArgsConstructor;
 import one.digitalinnovation.parking.exception.CarNotFoundException;
-import one.digitalinnovation.parking.exception.ParkingNotFoundException;
 import one.digitalinnovation.parking.model.Car;
 import one.digitalinnovation.parking.model.Parking;
 import one.digitalinnovation.parking.repository.CarRepository;
@@ -23,15 +22,18 @@ public class ParkingService {
 
     @Transactional(readOnly = true)
     public Parking findParking() {
-        return repository.findById(id).orElseThrow(() -> new ParkingNotFoundException(id));
+        return repository.findById(id).orElseThrow(() -> new RuntimeException(id));
     }
 
-    public Car entryCar(Car car) {
+    public Car entryCar(String license) {
+        Car car = carRepository.findByLicense(license).orElseThrow(() -> new CarNotFoundException(license));
         Parking parking = findParking();
-        parking.entryCar(car);
+        car.setAmountParked(1);
+        car.setIsParked(true);
         car.setEntryDate(LocalDateTime.now());
-        car.setEstaEstacionado(true);
-        car.setQuantEstacionou(1);
+        car.setExitDate(null);
+        car.setBill(null);
+        parking.entryCar(car);
         carRepository.save(car);
         return car;
     }
@@ -41,6 +43,7 @@ public class ParkingService {
         var parking = findParking();
         car.setExitDate(LocalDateTime.now());
         car.setBill(ParkingCheckOut.getBill(car));
+        car.setIsParked(false);
         parking.exitCar(car);
         carRepository.save(car);
 

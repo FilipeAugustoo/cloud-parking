@@ -1,14 +1,16 @@
 package one.digitalinnovation.parking.controller;
 
 import lombok.RequiredArgsConstructor;
+import one.digitalinnovation.parking.controller.dto.CarCreateDTO;
+import one.digitalinnovation.parking.controller.dto.CarDTO;
+import one.digitalinnovation.parking.controller.mapper.CarMapper;
 import one.digitalinnovation.parking.model.Car;
 import one.digitalinnovation.parking.service.CarService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -17,16 +19,27 @@ import java.util.List;
 public class CarController {
 
     private final CarService service;
+    private final CarMapper mapper;
 
     @GetMapping
-    public ResponseEntity<List<Car>> findAllCars() {
+    public ResponseEntity<List<CarDTO>> findAllCars() {
         List<Car> cars = service.findAllCars();
-        return ResponseEntity.ok(cars);
+        List<CarDTO> carsDTO = mapper.toCarDTOList(cars);
+        return ResponseEntity.ok(carsDTO);
     }
 
     @GetMapping("{license}")
-    public ResponseEntity<Car> findByLicense(@PathVariable String license) {
+    public ResponseEntity<CarDTO> findByLicense(@PathVariable String license) {
         Car car = service.findByLicense(license);
-        return ResponseEntity.ok(car);
+        CarDTO carDTO = mapper.toCarDTO(car);
+        return ResponseEntity.ok(carDTO);
+    }
+
+    @PostMapping
+    public ResponseEntity<CarDTO> createCar(@Valid @RequestBody CarCreateDTO dto) {
+        Car car = mapper.toCar(dto);
+        Car carCreated = service.create(car);
+        CarDTO carDTO = mapper.toCarDTO(carCreated);
+        return ResponseEntity.status(HttpStatus.CREATED).body(carDTO);
     }
 }

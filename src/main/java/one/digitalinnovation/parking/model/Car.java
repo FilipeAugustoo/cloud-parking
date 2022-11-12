@@ -21,15 +21,15 @@ public class Car {
     private String state;
     private String model;
     private String color;
-    private Boolean estaEstacionado;
+    private Boolean isParked;
     @Setter(AccessLevel.NONE)
-    private Integer quantEstacionou = 0;
+    private Integer amountParked = 0;
     private LocalDateTime entryDate;
     private LocalDateTime exitDate;
     private Double bill;
 
-    public void setQuantEstacionou(Integer n) {
-        quantEstacionou += n;
+    public void setAmountParked(Integer n) {
+        amountParked += n;
     }
 
 }
