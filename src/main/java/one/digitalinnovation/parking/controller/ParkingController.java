@@ -4,11 +4,9 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import one.digitalinnovation.parking.controller.dto.ParkingDTO;
-import one.digitalinnovation.parking.controller.mapper.CarMapper;
 import one.digitalinnovation.parking.controller.mapper.ParkingMapper;
 import one.digitalinnovation.parking.model.Car;
 import one.digitalinnovation.parking.service.ParkingService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,13 +17,12 @@ import org.springframework.web.bind.annotation.*;
 public class ParkingController {
 
     private final ParkingService service;
-    private final CarMapper carMapper;
-    private final ParkingMapper parkingMapper;
+    private final ParkingMapper mapper;
 
     @GetMapping
     @ApiOperation("Busca Estacionamento")
     public ResponseEntity<ParkingDTO> findParking() {
-        ParkingDTO parking = parkingMapper.toParkingDTO(service.findParking());
+        ParkingDTO parking = mapper.toParkingDTO(service.findParking());
         return ResponseEntity.ok(parking);
     }
 
@@ -33,7 +30,7 @@ public class ParkingController {
     @PostMapping("/entry/{license}")
     public ResponseEntity<Car> entryCar(@PathVariable String license) {
         Car car = service.entryCar(license);
-        return ResponseEntity.status(HttpStatus.CREATED).body(car);
+        return ResponseEntity.ok(car);
     }
 
     @PostMapping("/exit/{license}")

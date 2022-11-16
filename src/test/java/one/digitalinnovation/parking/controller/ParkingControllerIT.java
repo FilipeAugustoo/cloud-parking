@@ -1,50 +1,107 @@
 package one.digitalinnovation.parking.controller;
 
-import io.restassured.RestAssured;
-import one.digitalinnovation.parking.controller.dto.CarCreateDTO;
-import org.hamcrest.Matchers;
+import one.digitalinnovation.parking.CloudParkingApplication;
+import one.digitalinnovation.parking.config.ContainersEnvironment;
+import one.digitalinnovation.parking.model.Car;
+import one.digitalinnovation.parking.model.Parking;
+import one.digitalinnovation.parking.repository.CarRepository;
+import one.digitalinnovation.parking.repository.ParkingRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.web.servlet.MockMvc;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class ParkingControllerIT extends AbstractContainerBase {
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 
-    @LocalServerPort
-    private int randomPort;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@ActiveProfiles("test")
+@ExtendWith(SpringExtension.class)
+@SpringBootTest(classes = CloudParkingApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@AutoConfigureMockMvc
+class ParkingControllerIT extends ContainersEnvironment {
+
+    @Autowired
+    private MockMvc mockMvc;
+    @Autowired
+    private ParkingRepository repository;
+    @Autowired
+    private CarRepository carRepository;
+
+    private String token = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJmaWxpcGUiLCJleHAiOjE2Njg1NDM1NDB9.55K6Y5Stu2T6OqXBiXemg_zF9QDWqWUcuhqjlDavk_2PVltpH24WU0FWi69ICN3DfbwWUBk_Fqu-cI2i_srwyA";
 
     @BeforeEach
-    public void setUpTest() {
-        RestAssured.port = randomPort;
+    public void addParking() {
+        var parking = new Parking();
+        var car = new Car();
+        car.setIsParked(true);
+        car.setState("DF");
+        car.setColor("RED");
+        car.setLicense("NFH-3820");
+        car.setModel("CORSA");
+        var carParked = new Car();
+        carParked.setIsParked(true);
+        carParked.setState("DF");
+        carParked.setEntryDate(LocalDateTime.now());
+        carParked.setColor("RED");
+        carParked.setLicense("LWS-7483");
+        carParked.setModel("CORSA");
+        parking.setId("f231373a27584403bf89c6150aff5287");
+        parking.setName("CLOUD_PARKING");
+        parking.setNUMBER_VACANCIES(5);
+        parking.setOCCUPIED_VACANCIES(0);
+        ArrayList<Car> cars = new ArrayList<>();
+        cars.add(carParked);
+        parking.setCars(cars);
+        carRepository.save(carParked);
+        carRepository.save(car);
+        repository.save(parking);
     }
 
     @Test
-    void whenFindAllThenCheckResult() {
-        RestAssured.given()
-                .when()
-                .get("/parking")
-                .then()
-                .statusCode(HttpStatus.OK.value());
+    void whenFindAllThenCheckResult() throws Exception {
+        mockMvc
+                .perform(get("/parking")
+                        .header("Authorization", token))
+                .andExpect(status().isOk());
     }
 
     @Test
-    void whenCreateThenCheckIsCreated() {
-        var createDto = new CarCreateDTO();
-        createDto.setColor("VERDE");
-        createDto.setLicense("NVG-2146");
-        createDto.setModel("JETTA");
-        createDto.setState("PI");
-
-        RestAssured.given()
-                .when()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(createDto)
-                .post("/parking")
-                .then()
-                .statusCode(HttpStatus.CREATED.value())
-                .body("license", Matchers.equalTo("NVG-2146"));
+    void whenEnteringACarWithWrongLicensePlateOrNotRegisteredReturnNotFound() throws Exception {
+        mockMvc
+                .perform(post("/parking/entry/HSJ-7362")
+                        .header("Authorization", token))
+                .andExpect(status().isNotFound());
     }
+
+    @Test
+    void whenEnteringACarItMustReturnOkWithTheDateAndTimeOfEntry() throws Exception {
+        mockMvc
+                .perform(post("/parking/entry/NFH-3820")
+                        .header("Authorization", token))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.entryDate").isNotEmpty())
+                .andExpect(jsonPath("$.isParked").value(true));
+    }
+
+    @Test
+    void whenLeavingACarYouMustAddTheDateAndTimeOfDeparture() throws Exception {
+        mockMvc
+                .perform(post("/parking/exit/LWS-7483")
+                        .header("Authorization", token))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.exitDate").isNotEmpty())
+                .andExpect(jsonPath("$.isParked").value(false))
+                .andExpect(jsonPath("$.bill").isNotEmpty());
+    }
+
 }
