@@ -47,7 +47,7 @@ public class CarControllerIT extends ContainersEnvironment {
         repository.save(car);
     }
 
-    private String token = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJmaWxpcGUiLCJleHAiOjE2Njg1NTAxNTR9.ayv6aAgrPgY193m3wEW0K29bOqqONaIiEX0k3k7CxlQVMoLlNsffurwJeI-AkyiPnRJ89sO2ZgcPchh92rttaw";
+    private String token = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmaWxpcGUiLCJpc3MiOiJBUEkgVm9sbC5tZWQiLCJleHAiOjE2Njg2MzgwMDh9.5jdgjtyjaIfHqOi1ciHgGIgLj0h2dv-QrCJqhQJ236w";
 
     @Test
     void whenFindAllThenCheckResult() throws Exception {

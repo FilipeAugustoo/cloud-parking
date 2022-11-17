@@ -37,7 +37,7 @@ class ParkingControllerIT extends ContainersEnvironment {
     @Autowired
     private CarRepository carRepository;
 
-    private String token = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJmaWxpcGUiLCJleHAiOjE2Njg1NDM1NDB9.55K6Y5Stu2T6OqXBiXemg_zF9QDWqWUcuhqjlDavk_2PVltpH24WU0FWi69ICN3DfbwWUBk_Fqu-cI2i_srwyA";
+    private String token = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmaWxpcGUiLCJpc3MiOiJBUEkgVm9sbC5tZWQiLCJleHAiOjE2Njg2MzgwMDh9.5jdgjtyjaIfHqOi1ciHgGIgLj0h2dv-QrCJqhQJ236w";
 
     @BeforeEach
     public void addParking() {
