@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("/user")
 @RequiredArgsConstructor
@@ -27,7 +29,7 @@ public class UserController {
 
     @PostMapping("/signin")
     @ApiOperation("Cadastra Usuário")
-    public ResponseEntity<User> createUser(@RequestBody UserCreateDTO userDto) {
+    public ResponseEntity<User> createUser(@Valid @RequestBody UserCreateDTO userDto) {
         User user = mapper.toUser(userDto);
         User userCreated = service.createUser(user);
 
