@@ -14,4 +14,5 @@ public class TokenDTO {
 
     @JsonFormat(pattern = "dd/MM/yyyy HH:mm")
     private LocalDateTime horaEmitida;
+
 }

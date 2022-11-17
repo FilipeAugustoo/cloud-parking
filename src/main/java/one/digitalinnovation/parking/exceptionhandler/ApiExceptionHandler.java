@@ -1,10 +1,7 @@
 package one.digitalinnovation.parking.exceptionhandler;
 
 import lombok.RequiredArgsConstructor;
-import one.digitalinnovation.parking.exception.CarNotFoundException;
-import one.digitalinnovation.parking.exception.FullParkingException;
-import one.digitalinnovation.parking.exception.LicenseAlreadyRegisteredException;
-import one.digitalinnovation.parking.exception.UserExistsException;
+import one.digitalinnovation.parking.exception.*;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpHeaders;
@@ -66,6 +63,18 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(UserExistsException.class)
     public ResponseEntity<Object> handleUserExists(UserExistsException ex, WebRequest request) {
         var status = HttpStatus.BAD_REQUEST;
+
+        var problem = new Problem();
+        problem.setStatus(status.value());
+        problem.setTitle(ex.getMessage());
+        problem.setDateTime(OffsetDateTime.now());
+
+        return handleExceptionInternal(ex, problem, new HttpHeaders(), status, request);
+    }
+
+    @ExceptionHandler(WrongUsernameOrPasswordException.class)
+    public ResponseEntity<Object> handleWrongUsernameOrPassword(WrongUsernameOrPasswordException ex, WebRequest request) {
+        var status = HttpStatus.FORBIDDEN;
 
         var problem = new Problem();
         problem.setStatus(status.value());
