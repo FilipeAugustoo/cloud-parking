@@ -2,6 +2,7 @@ package one.digitalinnovation.parking.service;
 
 import lombok.RequiredArgsConstructor;
 import one.digitalinnovation.parking.exception.CarNotFoundException;
+import one.digitalinnovation.parking.exception.FullParkingException;
 import one.digitalinnovation.parking.model.Car;
 import one.digitalinnovation.parking.model.Parking;
 import one.digitalinnovation.parking.repository.CarRepository;
@@ -28,6 +29,10 @@ public class ParkingService {
     public Car entryCar(String license) {
         Car car = carRepository.findByLicense(license).orElseThrow(() -> new CarNotFoundException(license));
         Parking parking = findParking();
+
+        if (parking.getOCCUPIED_VACANCIES() >= parking.getNUMBER_VACANCIES())
+            throw new FullParkingException("Estacionamento Cheio");
+
         car.setAmountParked(1);
         car.setIsParked(true);
         car.setEntryDate(LocalDateTime.now());
