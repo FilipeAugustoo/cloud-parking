@@ -37,7 +37,7 @@ class ParkingControllerIT extends ContainersEnvironment {
     @Autowired
     private CarRepository carRepository;
 
-    private String token = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmaWxpcGUiLCJpc3MiOiJBUEkgVm9sbC5tZWQiLCJleHAiOjE2Njg2MzgwMDh9.5jdgjtyjaIfHqOi1ciHgGIgLj0h2dv-QrCJqhQJ236w";
+    private String token = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmaWxpcGUiLCJpc3MiOiJBUEkgVm9sbC5tZWQiLCJleHAiOjE2Njg3MTY1MDJ9.DAC_lMvJ4gg8pUW90yYT0PWahTUnvksuqIem2IFUkTk";
 
     @BeforeEach
     public void addParking() {
@@ -102,6 +102,19 @@ class ParkingControllerIT extends ContainersEnvironment {
                 .andExpect(jsonPath("$.exitDate").isNotEmpty())
                 .andExpect(jsonPath("$.isParked").value(false))
                 .andExpect(jsonPath("$.bill").isNotEmpty());
+    }
+
+    @Test
+    void whenACarEntersAndTheParkingLotIsFullItMustReturn() throws Exception {
+        Parking parking = repository.findById("f231373a27584403bf89c6150aff5287").get();
+        parking.setOCCUPIED_VACANCIES(5);
+        repository.save(parking);
+
+        mockMvc
+                .perform(post("/parking/entry/NFH-3820")
+                        .header("Authorization", token))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.title").value("Estacionamento Cheio"));
     }
 
 }

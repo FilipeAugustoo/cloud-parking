@@ -40,7 +40,7 @@ public class UserControllerIT extends ContainersEnvironment {
         User user = new User();
         user.setName("joao");
         user.setUsername("joao");
-        user.setPassword("$2a$10$2gCF432/q.Pv9pVZFHXBb.tudKvqZNu3xjskGgJPoAtCBT/zdO062");
+        user.setPassword("$2a$10$2gCF432/q.Pv9pVZFHXBb.tudKvqZNu3xjskGgJPoAtCBT/zdO062");//Senha criptografada
         repository.save(user);
     }
 
