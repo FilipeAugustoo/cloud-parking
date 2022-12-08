@@ -28,8 +28,8 @@ public class SwaggerConfig {
     private Contact contato() {
         return new Contact(
                 "Filipe Augusto",
-                "http://localhost:8080/",
-                "filipe@gmail.com"
+                "https://filipe-augusto.vercel.app",
+                "filipeaugusto2130@gmail.com"
         );
     }
 
@@ -42,8 +42,8 @@ public class SwaggerConfig {
         apiInfoBuilder.description("Cloud Parking Rest API");
         apiInfoBuilder.version("1.0");
         apiInfoBuilder.termsOfServiceUrl("Open Source");
-        apiInfoBuilder.license("DIO");
-        apiInfoBuilder.licenseUrl("https://web.dio.me/home");
+        apiInfoBuilder.license("FILIPE");
+        apiInfoBuilder.licenseUrl("https://filipe-augusto.vercel.app");
         apiInfoBuilder.contact(this.contato());
 
         return apiInfoBuilder;
