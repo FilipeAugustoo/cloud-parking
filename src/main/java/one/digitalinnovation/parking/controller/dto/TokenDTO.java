@@ -10,8 +10,8 @@ import java.time.LocalDateTime;
 @Setter
 public class TokenDTO {
 
+    private String username;
     private String token;
-
     @JsonFormat(pattern = "dd/MM/yyyy HH:mm")
     private LocalDateTime horaEmitida;
 

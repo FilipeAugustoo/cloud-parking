@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import one.digitalinnovation.parking.config.TokenService;
 import one.digitalinnovation.parking.config.UserDetailsData;
 import one.digitalinnovation.parking.controller.dto.TokenDTO;
+import one.digitalinnovation.parking.controller.dto.TokenValidateDTO;
 import one.digitalinnovation.parking.controller.dto.UserLoginDTO;
 import one.digitalinnovation.parking.exception.UserExistsException;
 import one.digitalinnovation.parking.exception.WrongUsernameOrPasswordException;
@@ -48,12 +49,25 @@ public class UserService {
             var tokenJWT = tokenService.gerarToken((UserDetailsData) authentication.getPrincipal());
             tokenDTO.setToken("Bearer " + tokenJWT);
             tokenDTO.setHoraEmitida(LocalDateTime.now());
+            tokenDTO.setUsername(userDto.getUsername());
             return tokenDTO;
 
         } catch (RuntimeException e) {
             throw new WrongUsernameOrPasswordException("Usuário ou senha incorreto");
         }
 
+    }
 
+    public TokenValidateDTO validateToken(String token) {
+        String nome = tokenService.getSubject(token);
+        boolean validToken = repository.findByUsername(nome).isPresent();
+
+        if (validToken) {
+            var tokenDTO = new TokenValidateDTO();
+            tokenDTO.setUsername(nome);
+            return tokenDTO;
+        }
+
+        return null;
     }
 }
