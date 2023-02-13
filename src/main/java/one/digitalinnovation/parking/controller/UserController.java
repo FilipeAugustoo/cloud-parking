@@ -26,7 +26,7 @@ public class UserController {
     private final UserService service;
     private final UserMapper mapper;
 
-    @PostMapping("/signin")
+    @PostMapping("/signup")
     @ApiOperation("Cadastra Usuário")
     public ResponseEntity<User> createUser(@Valid @RequestBody UserCreateDTO userDto) {
         User user = mapper.toUser(userDto);
@@ -35,7 +35,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(userCreated);
     }
 
-    @PostMapping("/login")
+    @PostMapping("/signin")
     @ApiOperation("Loga Usuário")
     public ResponseEntity<TokenDTO> loginUser(@RequestBody UserLoginDTO userDto) {
         TokenDTO token = service.loginUser(userDto);
@@ -51,7 +51,11 @@ public class UserController {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
 
-
+    @PostMapping("/logout")
+    @ApiOperation("Faz o Logout")
+    public ResponseEntity<Boolean> logoutUser() {
+        return ResponseEntity.ok(true);
     }
 }
